@@ -17,3 +17,8 @@ export interface LoginResponse {
     message: string;
     id: number;
 }
+
+export interface ResetPassword {
+    password: string;
+    confirmPassword: string;
+} 
