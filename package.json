@@ -1,0 +1,26 @@
+{
+  "name": "notenest",
+  "version": "1.0.0",
+  "description": "Personal Note taking App",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
+    "build": "concurrently \"cd server && npm run build\" \"cd client && npm run build\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aneetan/NoteNest.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aneetan/NoteNest/issues"
+  },
+  "homepage": "https://github.com/aneetan/NoteNest#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
