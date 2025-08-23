@@ -22,5 +22,8 @@
   "homepage": "https://github.com/aneetan/NoteNest#readme",
   "devDependencies": {
     "concurrently": "^9.2.0"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.85.5"
   }
 }
