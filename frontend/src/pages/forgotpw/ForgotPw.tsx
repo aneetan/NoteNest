@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react"
 import type { LoginProps } from "../../types/auth";
+import { useNavigate } from "react-router";
 
  const ForgotPw: React.FC = () => {
     const [formData, setFormData] = useState<Omit<LoginProps, "password">>({
@@ -7,6 +8,7 @@ import type { LoginProps } from "../../types/auth";
     });
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({...formData, [e.target.name]: e.target.value});
@@ -17,6 +19,7 @@ import type { LoginProps } from "../../types/auth";
         e.preventDefault();
         console.log("Email entered")
         setLoading(false);
+        navigate("/verify-otp");
     }
 
   return (
