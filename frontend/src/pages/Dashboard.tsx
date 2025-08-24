@@ -1,13 +1,12 @@
+import NotesComponent from "../components/NotesComponent"
 
 const Dashboard = () => {
   return (
     <>
       <div className="container w-full h-screen p-6 rounded-xl">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">My Notes</h1>
         <div className="md:grid grid-cols-3 gap-4 justify-between flex flex-col">
-            <div className="h-[200px] bg-[var(--primary-lighter)] p-4 rounded-xl">1</div>
-            <div className="h-[200px] bg-[var(--primary-lighter)] p-4 rounded-xl">2</div>
-            <div className="h-[200px] bg-[var(--primary-lighter)] p-4 rounded-xl">3</div>
-            <div className="h-[200px] bg-[var(--primary-lighter)] p-4 rounded-xl">4</div>
+            <NotesComponent/>
         </div>
       </div>
     </>
