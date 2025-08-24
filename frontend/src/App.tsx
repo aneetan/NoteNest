@@ -5,6 +5,9 @@ import Login from './pages/Login'
 import ForgotPw from './pages/forgotpw/ForgotPw'
 import ResetPw from './pages/forgotpw/ResetPw'
 import OtpVerify from './pages/forgotpw/OtpVerify'
+import UserLayout from './components/layout/UserLayout'
+import Dashboard from './pages/Dashboard'
+import MyNotes from './pages/MyNotes'
 
 function App() {
   return (
@@ -17,6 +20,11 @@ function App() {
           <Route path='/forgot-password' element={<ForgotPw/>} />
           <Route path='/verify-otp' element={<OtpVerify/>} />
           <Route path='/reset-password' element={<ResetPw/>} />
+
+          <Route element={<UserLayout/>}>
+              <Route path="dashboard" element={<Dashboard/>} />
+              <Route path="notes" element={<MyNotes/>} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>
