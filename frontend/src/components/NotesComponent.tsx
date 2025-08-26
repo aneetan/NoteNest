@@ -60,10 +60,10 @@ const NotesComponent:React.FC<ComponentProps> = ({user}) => {
     ));
   };
 
-  const handleEdit = (noteId: string) => {
-  // Implement your edit logic here
-  console.log('Edit note:', noteId);
-};
+   const handleEdit = (noteId: string) => {
+      // Implement your edit logic here
+      console.log('Edit note:', noteId);
+   };
 
 const handleDelete = (noteId: string) => {
   // Implement your delete logic here
