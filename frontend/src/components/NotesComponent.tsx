@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { MdPerson } from 'react-icons/md';
-import { NavLink } from 'react-router';
+import DetailsModal from './DetailsNote';
 
-interface Note {
+export interface Note {
   id: string;
   content: string;
   author: string;
@@ -51,6 +51,8 @@ const NotesComponent:React.FC<ComponentProps> = ({user}) => {
       isFavorited: false
     }
   ]);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [isDescModalOpen, setIsDescModalOpen] = useState(false);
 
   const toggleFavorite = (id: string) => {
     setNotes(notes.map(note => 
@@ -61,7 +63,6 @@ const NotesComponent:React.FC<ComponentProps> = ({user}) => {
   const handleEdit = (noteId: string) => {
   // Implement your edit logic here
   console.log('Edit note:', noteId);
-  // You might want to open a modal or navigate to an edit page
 };
 
 const handleDelete = (noteId: string) => {
@@ -71,17 +72,25 @@ const handleDelete = (noteId: string) => {
   }
 };
 
+const openDescModal = (note: Note) => {
+   setSelectedNote(note);
+   setIsDescModalOpen(true);
+}
+
+const closeDescModal = () => {
+   setIsDescModalOpen(false);
+   setSelectedNote(null);
+}
+
   return (
    <>
       {notes.map(note => (
          <div key={note.id} className="bg-[var(--primary-lighter)] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
          <div className="p-5">
             <div className="flex justify-between items-start mb-3">
-               <NavLink to="/desc">
-                  <span className="py-1 font-semibold text-base rounded-full hover:underline text-[var(--primary-color)]">
+                  <span onClick={() => openDescModal(note)} className="py-1 font-semibold text-base rounded-full hover:underline cursor-pointer text-[var(--primary-color)]">
                   {note.title}
                   </span>
-               </NavLink>
 
                <div className="flex items-center gap-2">
                {user?(
@@ -143,6 +152,12 @@ const handleDelete = (noteId: string) => {
          </div>
          </div>
       ))}
+       <DetailsModal
+        note={selectedNote}
+        isOpen={isDescModalOpen}
+        onClose={closeDescModal}
+        user={user}
+      />
    </>
   );
 };
