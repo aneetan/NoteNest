@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { MdPerson } from 'react-icons/md';
-import { NavLink } from 'react-router';
+import DetailsModal from './DetailsNote';
+import AddNoteModal from './AddNoteModal';
+import DeleteModal from './DeleteModal';
 
-interface Note {
+export interface Note {
   id: string;
   content: string;
   author: string;
@@ -51,6 +53,10 @@ const NotesComponent:React.FC<ComponentProps> = ({user}) => {
       isFavorited: false
     }
   ]);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [isDescModalOpen, setIsDescModalOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const toggleFavorite = (id: string) => {
     setNotes(notes.map(note => 
@@ -58,18 +64,35 @@ const NotesComponent:React.FC<ComponentProps> = ({user}) => {
     ));
   };
 
-  const handleEdit = (noteId: string) => {
-  // Implement your edit logic here
-  console.log('Edit note:', noteId);
-  // You might want to open a modal or navigate to an edit page
-};
+const openDescModal = (note: Note) => {
+   setSelectedNote(note);
+   setIsDescModalOpen(true);
+}
 
-const handleDelete = (noteId: string) => {
-  // Implement your delete logic here
-  if (window.confirm('Are you sure you want to delete this note?')) {
-    setNotes(notes.filter(note => note.id !== noteId));
-  }
-};
+const closeDescModal = () => {
+   setIsDescModalOpen(false);
+   setSelectedNote(null);
+}
+
+const openEditModal = (note: Note) => {
+   setSelectedNote(note);
+   setIsEditOpen(true);
+}
+
+const closeEditModal = () => {
+   setIsEditOpen(false);
+   setSelectedNote(null);
+}
+
+const openDeleteModal = (note: Note) => {
+   setSelectedNote(note);
+   setIsDeleteOpen(true);
+}
+
+const closeDeleteModal = () => {
+   setIsDeleteOpen(false);
+   setSelectedNote(null);
+}
 
   return (
    <>
@@ -77,18 +100,16 @@ const handleDelete = (noteId: string) => {
          <div key={note.id} className="bg-[var(--primary-lighter)] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
          <div className="p-5">
             <div className="flex justify-between items-start mb-3">
-               <NavLink to="/desc">
-                  <span className="py-1 font-semibold text-base rounded-full hover:underline text-[var(--primary-color)]">
+                  <span onClick={() => openDescModal(note)} className="py-1 font-semibold text-base rounded-full hover:underline cursor-pointer text-[var(--primary-color)]">
                   {note.title}
                   </span>
-               </NavLink>
 
                <div className="flex items-center gap-2">
                {user?(
                   <>
                      {/* Edit Button */}
                      <button 
-                        onClick={() => handleEdit(note.id)}
+                        onClick={() => openEditModal(note)}
                         className="text-gray-600 hover:text-blue-600 focus:outline-none p-1 rounded-full hover:bg-blue-50"
                         aria-label="Edit note"
                      >
@@ -99,7 +120,7 @@ const handleDelete = (noteId: string) => {
                      
                      {/* Delete Button */}
                      <button 
-                        onClick={() => handleDelete(note.id)}
+                        onClick={() => openDeleteModal(note)}
                         className="text-gray-600 hover:text-red-600 focus:outline-none p-1 rounded-full hover:bg-red-50"
                         aria-label="Delete note"
                      >
@@ -143,6 +164,25 @@ const handleDelete = (noteId: string) => {
          </div>
          </div>
       ))}
+       <DetailsModal
+        note={selectedNote}
+        isOpen={isDescModalOpen}
+        onClose={closeDescModal}
+        user={user}
+      />
+
+      <AddNoteModal
+         isOpen={isEditOpen}
+         onClose={closeEditModal}
+         isEdit= {true}
+         noteToEdit= {selectedNote}
+      />
+
+      <DeleteModal
+         isOpen = {isDeleteOpen}
+         onClose= {closeDeleteModal}
+         noteToDelete= {selectedNote}
+      />
    </>
   );
 };
