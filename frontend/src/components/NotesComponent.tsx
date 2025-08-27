@@ -3,6 +3,7 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { MdPerson } from 'react-icons/md';
 import DetailsModal from './DetailsNote';
 import AddNoteModal from './AddNoteModal';
+import DeleteModal from './DeleteModal';
 
 export interface Note {
   id: string;
@@ -55,24 +56,13 @@ const NotesComponent:React.FC<ComponentProps> = ({user}) => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isDescModalOpen, setIsDescModalOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const toggleFavorite = (id: string) => {
     setNotes(notes.map(note => 
       note.id === id ? { ...note, isFavorited: !note.isFavorited } : note
     ));
   };
-
-   const handleEdit = (noteId: string) => {
-      // Implement your edit logic here
-      console.log('Edit note:', noteId);
-   };
-
-const handleDelete = (noteId: string) => {
-  // Implement your delete logic here
-  if (window.confirm('Are you sure you want to delete this note?')) {
-    setNotes(notes.filter(note => note.id !== noteId));
-  }
-};
 
 const openDescModal = (note: Note) => {
    setSelectedNote(note);
@@ -91,6 +81,16 @@ const openEditModal = (note: Note) => {
 
 const closeEditModal = () => {
    setIsEditOpen(false);
+   setSelectedNote(null);
+}
+
+const openDeleteModal = (note: Note) => {
+   setSelectedNote(note);
+   setIsDeleteOpen(true);
+}
+
+const closeDeleteModal = () => {
+   setIsDeleteOpen(false);
    setSelectedNote(null);
 }
 
@@ -120,7 +120,7 @@ const closeEditModal = () => {
                      
                      {/* Delete Button */}
                      <button 
-                        onClick={() => handleDelete(note.id)}
+                        onClick={() => openDeleteModal(note)}
                         className="text-gray-600 hover:text-red-600 focus:outline-none p-1 rounded-full hover:bg-red-50"
                         aria-label="Delete note"
                      >
@@ -176,6 +176,12 @@ const closeEditModal = () => {
          onClose={closeEditModal}
          isEdit= {true}
          noteToEdit= {selectedNote}
+      />
+
+      <DeleteModal
+         isOpen = {isDeleteOpen}
+         onClose= {closeDeleteModal}
+         noteToDelete= {selectedNote}
       />
    </>
   );
