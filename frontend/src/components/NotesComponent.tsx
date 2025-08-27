@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { MdPerson } from 'react-icons/md';
 import DetailsModal from './DetailsNote';
+import AddNoteModal from './AddNoteModal';
 
 export interface Note {
   id: string;
@@ -53,6 +54,7 @@ const NotesComponent:React.FC<ComponentProps> = ({user}) => {
   ]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isDescModalOpen, setIsDescModalOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const toggleFavorite = (id: string) => {
     setNotes(notes.map(note => 
@@ -82,6 +84,16 @@ const closeDescModal = () => {
    setSelectedNote(null);
 }
 
+const openEditModal = (note: Note) => {
+   setSelectedNote(note);
+   setIsEditOpen(true);
+}
+
+const closeEditModal = () => {
+   setIsEditOpen(false);
+   setSelectedNote(null);
+}
+
   return (
    <>
       {notes.map(note => (
@@ -97,7 +109,7 @@ const closeDescModal = () => {
                   <>
                      {/* Edit Button */}
                      <button 
-                        onClick={() => handleEdit(note.id)}
+                        onClick={() => openEditModal(note)}
                         className="text-gray-600 hover:text-blue-600 focus:outline-none p-1 rounded-full hover:bg-blue-50"
                         aria-label="Edit note"
                      >
@@ -157,6 +169,13 @@ const closeDescModal = () => {
         isOpen={isDescModalOpen}
         onClose={closeDescModal}
         user={user}
+      />
+
+      <AddNoteModal
+         isOpen={isEditOpen}
+         onClose={closeEditModal}
+         isEdit= {true}
+         noteToEdit= {selectedNote}
       />
    </>
   );

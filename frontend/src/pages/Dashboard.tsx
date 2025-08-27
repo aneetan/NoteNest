@@ -16,7 +16,7 @@ const Dashboard = () => {
   return (
     <>
       <div className="container w-full h-screen p-6 rounded-xl">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4">
           <h1 className="text-3xl font-bold text-gray-800 mb-4"> All Notes </h1>
           <button 
           onClick={openAddModal}
@@ -33,6 +33,7 @@ const Dashboard = () => {
       <AddNoteModal 
         isOpen={isAddModalOpen}
         onClose={closeAddModal}
+        isEdit= {false}
       />
     </>
   )

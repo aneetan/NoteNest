@@ -1,21 +1,33 @@
 // components/AddNoteModal.tsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Note } from './NotesComponent';
 
 interface AddNoteModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isEdit: boolean;
+  noteToEdit ?: Note | null;
 }
 
-const AddNoteModal: React.FC<AddNoteModalProps> = ({ 
-  isOpen, 
-  onClose
-}) => {
+const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, isEdit, noteToEdit }) => {
   const [formData, setFormData] = useState<Omit<Note, 'id' | 'isFavorited' | 'author'| 'date'>>({
     title: '',
     content: ''
   })
   const [errors, setErrors] = useState<{title?: string, content?: string}>({});
+
+  useEffect(() => {
+    if(isOpen){
+      if(isEdit && noteToEdit){
+        setFormData({
+          title: noteToEdit.title,
+          content: noteToEdit.content
+        })
+      } else {
+        resetForm();
+      }
+    }
+  }, [isOpen, isEdit, noteToEdit])
 
   if (!isOpen) return null;
 
@@ -25,6 +37,10 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({
       ...prevState,
       [name]: value,
     }));
+
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({...prev, [name]: undefined}));
+    }
   }
 
   const validateForm = () => {
@@ -46,6 +62,12 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({
     e.preventDefault();
     
     if (!validateForm()) return;
+
+    // if(isEdit && noteToEdit){
+
+    // } else {
+
+    // }
     
     resetForm();
     onClose();
@@ -78,7 +100,9 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({
       <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
-            <h2 className="text-2xl font-bold text-gray-800">Add New Note</h2>
+            <h2 className="text-2xl font-bold text-gray-800">
+                {isEdit ? 'Edit Note' : 'Add New Note'}
+            </h2>
             <button 
               onClick={handleClose}
               className="text-gray-500 hover:text-gray-700 focus:outline-none"
@@ -119,7 +143,7 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({
                 value={formData.content}
                 onChange={handleChange}
                 rows={5}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
                   errors.content ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter your note content"
@@ -139,7 +163,7 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-md hover:bg-[var(--primary-color-hover)] focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                Add Note
+                 {isEdit ? 'Update Note' : 'Add Note'}
               </button>
             </div>
           </form>
