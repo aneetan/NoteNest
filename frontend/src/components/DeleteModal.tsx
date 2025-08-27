@@ -1,4 +1,3 @@
-import { FaExclamation } from "react-icons/fa";
 import type { Note } from "./NotesComponent";
 
 interface DeleteModalProps {
