@@ -21,7 +21,7 @@ class Notes extends Model<NoteAttributes, Omit<NoteAttributes, 'noteId'>> implem
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-               len: [0, 10]
+               len: [5, 100]
             }
          },
          content: {
