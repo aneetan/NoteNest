@@ -5,6 +5,10 @@ import userRepository from "../repository/user.repository";
 import { errorResponse } from "../helper/errorMessage";
 import { generateJwtToken } from "../utils/jwtToken";
 import { AxiosResponse } from "axios";
+import { verifyAccessToken } from "../middleware/auth.middleware";
+import { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken"
+
 
 class AuthController{
    register = [
@@ -62,7 +66,20 @@ class AuthController{
                 next(e);
             }
         }
-    ]; 
+    ];
+
+    logout = [
+      verifyAccessToken,
+      async(req: Request, res: Response) => {
+         const userId = req.body.userId;
+         const token = req.header("Authorization")?.replace("Bearer ", "");
+
+         res.json({ message: "Logged out" });
+      }
+
+    ]
+
+
 }
 
 export default new AuthController();
