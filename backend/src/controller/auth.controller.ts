@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { validateSchema } from "../middleware/validate.middleware";
-import { LoginUserInput, loginUserSchema, registerUserSchema } from "../schemas/user.schema";
+import { LoginUserInput, loginUserSchema, RegisterUserInput, registerUserSchema } from "../schemas/user.schema";
 import userRepository from "../repository/user.repository";
 import { errorResponse } from "../helper/errorMessage";
 import { generateJwtToken } from "../utils/jwtToken";
+import { AxiosResponse } from "axios";
 
 class AuthController{
    register = [
       validateSchema(registerUserSchema),
-      async(req:Request, res: Response, next: NextFunction) => {
-         try{
+      async(req:Request<{}, {}, RegisterUserInput['body']>, res: Response, next: NextFunction): Promise<void> => {
+         try {
             const userDto = req.body;
 
             if(userDto.password !== userDto.confirmPassword) {
@@ -17,7 +18,9 @@ class AuthController{
             }
 
             const existingUser = await userRepository.findByEmail(userDto.email);
-            if(existingUser) throw new Error("Email already in use");
+            if(existingUser) {
+               throw new Error("Email already in use")
+            };
 
             const userData = {
                fullName: userDto.fullName,
@@ -59,7 +62,7 @@ class AuthController{
                 next(e);
             }
         }
-    ] 
+    ]; 
 }
 
 export default new AuthController();

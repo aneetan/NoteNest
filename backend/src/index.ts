@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { connectToDatabase } from './config/dbconfig';
+import authRouter from './routes/auth.routes';
 
 require('dotenv').config();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 connectToDatabase()
     .then(() => {
         //routes
+        app.use('/auth', authRouter);
 
         app.listen(PORT, () => console.log(`Server started at http://localhost:${PORT}`))  
     })
