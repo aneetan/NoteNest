@@ -1,6 +1,10 @@
 import type React from "react";
 import { useState, type FormEvent } from "react";
 import type { RegisterProps } from "../types/auth";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError, type AxiosResponse } from "axios";
+import { registerUser } from "../api/user.api";
+import { useNavigate } from "react-router";
 
 //error msg
 interface ErrorProps {
@@ -21,7 +25,18 @@ const Register:React.FC = () => {
     })
 
     const [error, setError] = useState<ErrorProps>({});
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const mutation = useMutation<AxiosResponse, AxiosError, RegisterProps>({
+        mutationFn: registerUser,
+        onSuccess: () => navigate("/login"),
+        onError: (e) => {
+            if(e.response){
+                console.log('Error response data:', e.response.data);
+                console.log('Error status:', e.response.status);
+            }
+        }
+    });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, type, value, checked } = e.target;
@@ -63,14 +78,8 @@ const Register:React.FC = () => {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        if(!validateForms()){
-         setLoading(false);
-         return;
-        } else {
-         console.log("Form submitted");
-         setLoading(false);
-        }
+        if(!validateForms()) return;
+        mutation.mutate(formData);
     }
 
     return (
@@ -180,9 +189,9 @@ const Register:React.FC = () => {
                             <button
                                 type="submit"
                                 className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[var(--primary-color)]
-                                  hover:bg-[var(--primary-color-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)] transition ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                  hover:bg-[var(--primary-color-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)] transition ${mutation.isPending ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
-                                {loading ? (
+                                {mutation.isPending ? (
                                     <>
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

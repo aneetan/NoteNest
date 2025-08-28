@@ -8,10 +8,13 @@ import OtpVerify from './pages/forgotpw/OtpVerify'
 import UserLayout from './components/layout/UserLayout'
 import Dashboard from './pages/Dashboard'
 import MyNotes from './pages/MyNotes'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 function App() {
+  const queryClient = new QueryClient();
   return (
     <>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login/>} />
@@ -27,6 +30,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+    </QueryClientProvider>
     </>
   )
 }
