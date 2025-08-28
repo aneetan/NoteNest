@@ -22,7 +22,7 @@ export const connectToDatabase = async():Promise<void> => {
         initializeModels(sequelize);
 
         //sync all models
-        await sequelize.sync({ alter: true});
+        await sequelize.sync({ alter: false});
         console.error("Connected to the database:");
     } catch (error) {
         console.error("Failed to connect to the database:", error);
