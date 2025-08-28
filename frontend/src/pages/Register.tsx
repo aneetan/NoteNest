@@ -32,7 +32,7 @@ const Register:React.FC = () => {
         onSuccess: () => navigate("/login"),
         onError: (e) => {
             if(e.response){
-                console.log('Error response data:', e.response.status);
+                console.log('Error response data:', e.response.data);
                 console.log('Error status:', e.response.status);
             }
         }
