@@ -2,10 +2,13 @@ import { useEffect, useRef, useState } from "react"
 import { MdLogout } from "react-icons/md";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { NavLink } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 const ProfileDropdown = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const {logout} = useAuth();
+
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
@@ -45,7 +48,7 @@ const ProfileDropdown = () => {
                     <NavLink 
                         to="/logout" 
                         className="flex items-center px-4 py-2 font-semibold text-red-500 hover:bg-gray-100"
-                        // onClick={logout}
+                        onClick={logout}
                     >
                         <MdLogout className="mr-2" /> Logout
                     </NavLink>
