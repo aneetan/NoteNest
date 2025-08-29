@@ -6,6 +6,7 @@
       "Notenest",
       "partialize",
       "resetpw",
+      "sadd",
       "setex"
    ]
 }

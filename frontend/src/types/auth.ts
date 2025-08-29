@@ -7,7 +7,7 @@ export interface RegisterProps {
 }
 
 export interface User {
-    userid: number;
+    id: number;
     fullName: string;
     email: string;
     password: string;

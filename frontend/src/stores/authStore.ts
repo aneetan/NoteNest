@@ -1,13 +1,13 @@
-import type { User } from "../types/auth";
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { logoutUser } from '../api/user.api';
 
 interface AuthStore {
   userId: number | null;
   token: string | null;
   isAuthenticated: boolean;
   login: (token: string, userId: number) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (userId: number) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -25,7 +25,8 @@ export const useAuthStore = create<AuthStore>()(
           isAuthenticated: true 
         });
       },
-      logout: (): Promise<void> => {
+      logout: async(userId: number): Promise<void> => {
+        await logoutUser(userId);
         localStorage.removeItem("token");
         set({ 
           token: null, 

@@ -27,3 +27,13 @@ export const resetPassword = async(formData: ResetPasswordRequest): Promise<Axio
    const response = await axios.post(`${API_URL}/auth/reset-password`, formData);
    return response.data;
 }
+
+export const logoutUser = async(userId: number) : Promise<AxiosResponse> => {
+   const token = localStorage.getItem("token");
+   const response = await axios.post(`${API_URL}/auth/logout`, {userId}, {
+      headers: {
+         Authorization: `Bearer ${token}`
+      }
+   });
+   return response.data;
+}

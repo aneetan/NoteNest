@@ -8,6 +8,7 @@ import { AxiosResponse } from "axios";
 import { verifyAccessToken } from "../middleware/auth.middleware";
 import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken"
+import { redis } from "../config/redis.config";
 
 
 class AuthController{
@@ -57,10 +58,11 @@ class AuthController{
                 }
 
                 const accessToken = generateJwtToken({user}, '1h');
-                
+                await redis.set(`accessToken:${user.id}`, accessToken, "EX", 60 * 60);
+
                 res
-                    .status(200)
-                    .json({"message": "User logged in successfully", accessToken, id: user.id});  
+                  .status(200)
+                  .json({"message": "User logged in successfully", accessToken, id: user.id});  
             } catch (e) {
                 errorResponse(e, res, "Invalid email or password");
                 next(e);
@@ -73,10 +75,18 @@ class AuthController{
       async(req: Request, res: Response) => {
          const userId = req.body.userId;
          const token = req.header("Authorization")?.replace("Bearer ", "");
+         if (!token) return res.status(400).json({ error: "Token required" });
+
+         const decoded = jwt.decode(token!) as JwtPayload;
+         await redis.del(`accessToken:${userId}`);
+
+         const expInSeconds = decoded?.exp -Math.floor(Date.now() / 1000);
+         if (expInSeconds > 0) {
+               await redis.set(`blacklist:${token}`, "true", "EX", expInSeconds);
+         }
 
          res.json({ message: "Logged out" });
       }
-
     ]
 
 

@@ -3,12 +3,17 @@ import { MdLogout } from "react-icons/md";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { NavLink } from "react-router";
 import { useAuth } from "../hooks/useAuth";
+import { getUserIdFromToken } from "../utils/token.utils";
 
 const ProfileDropdown = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const {logout} = useAuth();
+    const userId = getUserIdFromToken(localStorage.getItem("token")!);
 
+    const handleLogout = () => {
+        logout(userId!);
+    }
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
@@ -48,7 +53,7 @@ const ProfileDropdown = () => {
                     <NavLink 
                         to="/logout" 
                         className="flex items-center px-4 py-2 font-semibold text-red-500 hover:bg-gray-100"
-                        onClick={logout}
+                        onClick={handleLogout}
                     >
                         <MdLogout className="mr-2" /> Logout
                     </NavLink>
