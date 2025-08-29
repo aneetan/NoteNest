@@ -4,15 +4,7 @@ import { MdPerson } from 'react-icons/md';
 import DetailsModal from './DetailsNote';
 import AddNoteModal from './AddNoteModal';
 import DeleteModal from './DeleteModal';
-
-export interface Note {
-  id: string;
-  content: string;
-  author: string;
-  title: string;
-  date: string;
-  isFavorited: boolean;
-}
+import type { Note } from '../types/notes';
 
 interface ComponentProps {
    user: boolean;
@@ -21,36 +13,20 @@ interface ComponentProps {
 const NotesComponent:React.FC<ComponentProps> = ({user}) => {
   const [notes, setNotes] = useState<Note[]>([
     {
-      id: '1',
+      noteId: 1,
       content: 'Meeting notes from the client presentation. We discussed project requirements and timelines for Q3 deliverables.',
-      author: 'Sarah Johnson',
+      user: 'Sarah Johnson',
       title: 'About Post',
-      date: '2023-10-15',
-      isFavorited: true
+      isFavorited: true,
+      userId: 1
     },
     {
-      id: '2',
+      noteId: 2,
       content: 'Grocery list for the weekend: eggs, milk, bread, fruits, and vegetables. Don\'t forget to buy dog food!',
-      author: 'Mike Chen',
+      user: 'Mike Chen',
       title: 'Personal Post',
-      date: '2023-10-14',
-      isFavorited: false
-    },
-    {
-      id: '3',
-      content: 'Ideas for the new blog post: "10 React Best Practices in 2023", "State Management Comparison", "TypeScript Tips for React Devs".',
-      author: 'Emma Wilson',
-      title: 'Ideas Notes',
-      date: '2023-10-12',
-      isFavorited: true
-    },
-    {
-      id: '4',
-      content: 'Reminder: Dentist appointment on Tuesday at 3 PM. Bring insurance card and arrive 15 minutes early to fill out paperwork.',
-      author: 'Alex Rivera',
-      title: 'Reminders Hello',
-      date: '2023-10-10',
-      isFavorited: false
+      isFavorited: false,
+      userId: 1
     }
   ]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
@@ -58,9 +34,9 @@ const NotesComponent:React.FC<ComponentProps> = ({user}) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const toggleFavorite = (id: string) => {
+  const toggleFavorite = (id: number) => {
     setNotes(notes.map(note => 
-      note.id === id ? { ...note, isFavorited: !note.isFavorited } : note
+      note.noteId === id ? { ...note, isFavorited: !note.isFavorited } : note
     ));
   };
 
@@ -97,7 +73,7 @@ const closeDeleteModal = () => {
   return (
    <>
       {notes.map(note => (
-         <div key={note.id} className="bg-[var(--primary-lighter)] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+         <div key={note.noteId} className="bg-[var(--primary-lighter)] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
          <div className="p-5">
             <div className="flex justify-between items-start mb-3">
                   <span onClick={() => openDescModal(note)} className="py-1 font-semibold text-base rounded-full hover:underline cursor-pointer text-[var(--primary-color)]">
@@ -132,7 +108,7 @@ const closeDeleteModal = () => {
                ): (
                   <>
                      <button 
-                     onClick={() => toggleFavorite(note.id)}
+                     onClick={() => toggleFavorite(note.noteId!)}
                      className="text-gray-400 hover:text-yellow-500 focus:outline-none"
                      >
                      {note.isFavorited ? (
@@ -156,10 +132,10 @@ const closeDeleteModal = () => {
                {!user && (
                <span className="flex flex-row gap-2 font-medium items-end">
                   <MdPerson className='w-5 h-5'/>
-                  {note.author}
+                  {note.user}
                </span>
                )}
-               <span>{new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+               {/* <span>{new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span> */}
             </div>
          </div>
          </div>

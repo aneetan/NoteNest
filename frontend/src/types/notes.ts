@@ -1,7 +1,8 @@
-export interface NoteAttributes {
+export interface Note {
    noteId: number | null;
    title: string;
    content: string;
    userId: number | null;
-   user: string;
+   user: string | undefined;
+   isFavorited: boolean;
 }

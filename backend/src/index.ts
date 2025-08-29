@@ -18,7 +18,7 @@ connectToDatabase()
     .then(() => {
         //routes
         app.use('/auth', authRouter);
-        app.use('/task', noteRouter)
+        app.use('/note', noteRouter)
 
         app.listen(PORT, () => console.log(`Server started at http://localhost:${PORT}`))  
     })

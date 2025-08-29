@@ -3,10 +3,10 @@ import notesController from "../controller/notes.controller";
 
 const noteRouter = Router();
 
-noteRouter.post('/add-task', notesController.addNotes);
+noteRouter.post('/add-note', notesController.addNotes);
 noteRouter.get('/:userId', notesController.getNotesByUserId);
 noteRouter.get('/', notesController.getNotes);
-noteRouter.put('/edit-task/:id', notesController.editNote);
-noteRouter.delete('/delete-task/:id', notesController.deleteNote);
+noteRouter.put('/edit-note/:id', notesController.editNote);
+noteRouter.delete('/delete-note/:id', notesController.deleteNote);
 
 export default noteRouter;
