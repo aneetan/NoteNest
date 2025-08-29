@@ -27,7 +27,7 @@ export class OTPService {
    }
 
    static verifyOTPToken (token: string) : OTPPayload {
-      return jwt.verify(token, process.env.JWT_RESET_SECRET!) as OTPPayload;
+      return jwt.verify(token, process.env.JWT_SECRET_KEY!) as OTPPayload;
    }
 
    static async storeOTP(email: string, otp: string): Promise<void> {

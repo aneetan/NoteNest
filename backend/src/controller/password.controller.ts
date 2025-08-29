@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { validateSchema } from "../middleware/validate.middleware";
-import { RequestResetInput, requestResetSchema, ResetPasswordInput, resetPasswordSchema, verifyOTPSchema } from "../schemas/resetpw.schema";
+import { RequestResetInput, requestResetSchema, ResetPasswordInput, resetPasswordSchema, VerifyOTPInput, verifyOTPSchema } from "../schemas/resetpw.schema";
 import userRepository from "../repository/user.repository";
 import { OTPService } from "../services/otp.service";
 import emailService from "../services/email.service";
-import tr from "zod/v4/locales/tr.cjs";
+import bcrypt from "bcryptjs"
+import { errorResponse } from "../helper/errorMessage";
 
 class PasswordController {
    requestReset = [
@@ -74,6 +75,7 @@ class PasswordController {
             });
             
          } catch (e) {
+            errorResponse(e, res, "Invalid or expired OTP");
             next(e);
          }
       }
@@ -87,7 +89,7 @@ class PasswordController {
 
             const payload = OTPService.verifyOTPToken(token);
 
-            if (payload.purpose !== 'password_reset' || payload.otp !== 'verified') {
+            if (payload.purpose !== 'password_reset') {
                throw new Error('Invalid reset token');
             }
 
@@ -97,9 +99,9 @@ class PasswordController {
             }
 
             //hash new password
-            const hashedPassword = await bcrypt.hash(newPassword, 12);
+            // const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-            await userRepository.updateUser(user.id, { password: hashedPassword });
+            await userRepository.updatePassword(user.id,  newPassword);
 
             res.status(200).json({
                message: 'Password reset successfully',

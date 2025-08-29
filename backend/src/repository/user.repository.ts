@@ -34,20 +34,15 @@ class UserRepository {
       return user;
    }
 
-   async updateUser(id: number, updateData: UserAttributes): Promise<User> {
+   async updatePassword(id: number, hashedPassword: string): Promise<User> {
       const user = await User.findByPk(id);
 
-      if (!user) {
-         throw new Error('User not found');
-      }
+      if (!user) throw new Error('User not found');
 
-      if(updateData.password) {
-         user.password = updateData.password;
-         await user.save();
-      } else {
-         await user.update(updateData);
+      if(hashedPassword) {
+         await user.update({ password: hashedPassword });
       }
-      return user.reload(); 
+      return user;
    }
 }
 

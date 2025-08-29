@@ -12,5 +12,4 @@ authRouter.post('/request-reset', passwordController.requestReset);
 authRouter.post('/verify-otp', passwordController.verifyOTP);
 authRouter.post('/reset-password', passwordController.resetPassword);
 
-
 export default authRouter;

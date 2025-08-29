@@ -4,8 +4,7 @@ export interface RegisterProps {
     password: string;
     confirmPassword: string;
     checkbox: boolean;
-} 
-
+}
 
 export interface LoginProps {
     email: string;
@@ -18,7 +17,19 @@ export interface LoginResponse {
     id: number;
 }
 
+export interface OTPVerifyData{
+    token: string;
+    email: string;
+    otp: string;
+}
+
 export interface ResetPassword {
-    password: string;
+    newPassword: string;
     confirmPassword: string;
 } 
+
+export interface ResetPasswordRequest {
+  newPassword: string;
+  token: string;
+}
+
