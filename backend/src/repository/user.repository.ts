@@ -1,5 +1,4 @@
 import User from "../models/user.model";
-import { RegisterUserInput, UpdateUserData } from "../schemas/user.schema";
 import { UserAttributes } from "../types/user.types";
 import bcrypt from 'bcryptjs';
 

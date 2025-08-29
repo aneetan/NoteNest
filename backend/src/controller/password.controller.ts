@@ -4,7 +4,6 @@ import { RequestResetInput, requestResetSchema, ResetPasswordInput, resetPasswor
 import userRepository from "../repository/user.repository";
 import { OTPService } from "../services/otp.service";
 import emailService from "../services/email.service";
-import bcrypt from "bcryptjs"
 import { errorResponse } from "../helper/errorMessage";
 
 class PasswordController {
@@ -97,9 +96,6 @@ class PasswordController {
             if (!user) {
                throw new Error('User not found');
             }
-
-            //hash new password
-            // const hashedPassword = await bcrypt.hash(newPassword, 10);
 
             await userRepository.updatePassword(user.id,  newPassword);
 

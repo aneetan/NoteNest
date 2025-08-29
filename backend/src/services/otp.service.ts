@@ -1,6 +1,6 @@
 import { OTP_EXPIRY_MINUTES } from "../utils/var.utils";
 import otpGenerator from 'otp-generator';
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { generateJwtToken } from "../utils/jwtToken";
 import { redis } from "../config/redis.config";
 

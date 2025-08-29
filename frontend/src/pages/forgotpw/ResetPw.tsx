@@ -1,6 +1,6 @@
 import type React from "react";
 import { useEffect, useState, type FormEvent } from "react";
-import type { ResetPassword, ResetPasswordRequest } from "../../types/auth";
+import type { ResetPassword } from "../../types/auth";
 import { useLocation, useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { resetPassword } from "../../api/user.api";
