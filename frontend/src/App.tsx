@@ -9,12 +9,14 @@ import UserLayout from './components/layout/UserLayout'
 import Dashboard from './pages/Dashboard'
 import MyNotes from './pages/MyNotes'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ToastContainer} from 'react-toastify';
 
 function App() {
   const queryClient = new QueryClient();
   return (
     <>
     <QueryClientProvider client={queryClient}>
+      <ToastContainer/>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login/>} />

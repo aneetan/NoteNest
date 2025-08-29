@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { loginUser } from "../api/user.api";
 import { useNavigate } from "react-router";
+import { showErrorToast } from "../utils/toast.utils";
 
  const Login: React.FC = () => {
     const [formData, setFormData] = useState<LoginProps>({
@@ -20,6 +21,7 @@ import { useNavigate } from "react-router";
             if(err.response){
                 console.log("Error status", err.response?.status);
                 console.log("Error message", err.response?.data);
+                showErrorToast("Login Failed")
             }
         }
     });

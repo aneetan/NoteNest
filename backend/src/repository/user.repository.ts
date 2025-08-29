@@ -1,4 +1,5 @@
 import User from "../models/user.model";
+import { RegisterUserInput, UpdateUserData } from "../schemas/user.schema";
 import { UserAttributes } from "../types/user.types";
 import bcrypt from 'bcryptjs';
 
@@ -31,6 +32,22 @@ class UserRepository {
       }
 
       return user;
+   }
+
+   async updateUser(id: number, updateData: UserAttributes): Promise<User> {
+      const user = await User.findByPk(id);
+
+      if (!user) {
+         throw new Error('User not found');
+      }
+
+      if(updateData.password) {
+         user.password = updateData.password;
+         await user.save();
+      } else {
+         await user.update(updateData);
+      }
+      return user.reload(); 
    }
 }
 

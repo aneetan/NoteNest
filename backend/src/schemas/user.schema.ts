@@ -31,5 +31,10 @@ export const loginUserSchema = z.object({
    })
 })
 
+export const updateUserData = z.object({
+   body: registerUserSchema.shape.body.partial()
+}) 
+
 export type RegisterUserInput = z.infer<typeof registerUserSchema>
 export type LoginUserInput = z.infer<typeof loginUserSchema>
+export type UpdateUserData = z.infer<typeof updateUserData>
