@@ -106,9 +106,9 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, isEdit, no
     if (!validateForm()) return;
 
      if (isEdit) {
-      mutation.mutate({ noteId: formData.noteId, formData});
+      mutation.mutateAsync({ noteId: formData.noteId, formData});
     } else {
-      mutation.mutate({
+      mutation.mutateAsync({
         title: formData.title,
         content: formData.content,
         user: user?.fullName,
