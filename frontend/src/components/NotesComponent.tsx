@@ -1,44 +1,22 @@
 import { useState } from 'react';
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { FaRegHeart } from 'react-icons/fa';
 import { MdPerson } from 'react-icons/md';
 import DetailsModal from './DetailsNote';
 import AddNoteModal from './AddNoteModal';
 import DeleteModal from './DeleteModal';
 import type { Note } from '../types/notes';
+import type { User } from '../types/auth';
 
 interface ComponentProps {
-   user: boolean;
+   notes: Note[];
+   user: User | null;
 }
 
-const NotesComponent:React.FC<ComponentProps> = ({user}) => {
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      noteId: 1,
-      content: 'Meeting notes from the client presentation. We discussed project requirements and timelines for Q3 deliverables.',
-      user: 'Sarah Johnson',
-      title: 'About Post',
-      isFavorited: true,
-      userId: 1
-    },
-    {
-      noteId: 2,
-      content: 'Grocery list for the weekend: eggs, milk, bread, fruits, and vegetables. Don\'t forget to buy dog food!',
-      user: 'Mike Chen',
-      title: 'Personal Post',
-      isFavorited: false,
-      userId: 1
-    }
-  ]);
+const NotesComponent:React.FC<ComponentProps> = ({notes, user}) => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isDescModalOpen, setIsDescModalOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-  const toggleFavorite = (id: number) => {
-    setNotes(notes.map(note => 
-      note.noteId === id ? { ...note, isFavorited: !note.isFavorited } : note
-    ));
-  };
 
 const openDescModal = (note: Note) => {
    setSelectedNote(note);
@@ -81,7 +59,7 @@ const closeDeleteModal = () => {
                   </span>
 
                <div className="flex items-center gap-2">
-               {user?(
+               {note.user === user!.fullName?(
                   <>
                      {/* Edit Button */}
                      <button 
@@ -108,14 +86,9 @@ const closeDeleteModal = () => {
                ): (
                   <>
                      <button 
-                     onClick={() => toggleFavorite(note.noteId!)}
                      className="text-gray-400 hover:text-yellow-500 focus:outline-none"
                      >
-                     {note.isFavorited ? (
-                        <FaHeart className='w-6 h-6 text-red-500'/>
-                     ) : (
                         <FaRegHeart className='w-6 h-6'/>
-                     )}
                      </button>
                   </>
                )}
@@ -135,7 +108,7 @@ const closeDeleteModal = () => {
                   {note.user}
                </span>
                )}
-               {/* <span>{new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span> */}
+               <span>{new Date(note.updatedAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</span>
             </div>
          </div>
          </div>

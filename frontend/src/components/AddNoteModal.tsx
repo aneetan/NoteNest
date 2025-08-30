@@ -54,8 +54,7 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, isEdit, no
           ...addPayload, 
           user: user?.fullName,
           userId: Number(user?.id),
-          noteId: null,
-          isFavorited: false
+          noteId: null
         });
       }
     },

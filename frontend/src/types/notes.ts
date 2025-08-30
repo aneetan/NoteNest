@@ -4,5 +4,6 @@ export interface Note {
    content: string;
    userId: number | null;
    user: string | undefined;
-   isFavorited: boolean;
+   createdAt?: Date;
+   updatedAt?: Date;
 }

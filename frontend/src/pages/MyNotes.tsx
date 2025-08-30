@@ -2,9 +2,26 @@ import { useState } from "react";
 import NotesComponent from "../components/NotesComponent"
 import { FaPlus } from "react-icons/fa";
 import AddNoteModal from "../components/AddNoteModal";
+import { getUserFromToken } from "../utils/token.utils";
+import { viewNotesByUser } from "../api/note.api";
+import { useQuery } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { Note } from "../types/notes";
 
 const MyNotes = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const user = getUserFromToken(localStorage.getItem("token")!);
+  const {data, isLoading, error} = useQuery<AxiosResponse, AxiosError, Note[]>({
+      queryKey: ['notes', user?.id],
+      queryFn: () => {
+        if (user?.id) {
+          return viewNotesByUser(user.id);
+        }
+        return Promise.resolve({ data: [] } as AxiosResponse);
+      },
+  })
+
+  const notes = data || [];
   
     const openAddModal = () => {
       setIsAddModalOpen(true);
@@ -13,6 +30,9 @@ const MyNotes = () => {
     const closeAddModal = () => {
       setIsAddModalOpen(false);
     }
+
+    if (isLoading) return <div>Loading notes...</div>;
+   if (error) return <div>Error: {error.message}</div>;
   return (
     <>
       <div className="container w-full h-screen p-6 rounded-xl">
@@ -27,7 +47,7 @@ const MyNotes = () => {
           </button>
         </div>
         <div className="md:grid grid-cols-3 gap-4 justify-between flex flex-col">
-            <NotesComponent user={true}/>
+            <NotesComponent notes={notes} user={user}/>
         </div>
       </div>
         <AddNoteModal 
