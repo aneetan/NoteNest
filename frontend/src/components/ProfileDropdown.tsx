@@ -3,16 +3,16 @@ import { MdLogout } from "react-icons/md";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { NavLink } from "react-router";
 import { useAuth } from "../hooks/useAuth";
-import { getUserIdFromToken } from "../utils/token.utils";
+import { getUserFromToken} from "../utils/token.utils";
 
 const ProfileDropdown = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const {logout} = useAuth();
-    const userId = getUserIdFromToken(localStorage.getItem("token")!);
+    const user = getUserFromToken(localStorage.getItem("token")!);
 
     const handleLogout = () => {
-        logout(userId!);
+        logout(user!.id);
     }
 
     const toggleDropdown = () => {
@@ -44,7 +44,7 @@ const ProfileDropdown = () => {
                 className="w-8 h-8 object-cover rounded-full"
                 alt="Profile"
                 />
-                <span className="mx-2 font-semibold">  User </span>
+                <span className="mx-2 font-semibold">  {user?.fullName} </span>
                 <RiArrowDropDownLine className={`text-2xl transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
