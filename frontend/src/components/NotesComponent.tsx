@@ -1,68 +1,22 @@
 import { useState } from 'react';
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { FaRegHeart } from 'react-icons/fa';
 import { MdPerson } from 'react-icons/md';
 import DetailsModal from './DetailsNote';
 import AddNoteModal from './AddNoteModal';
 import DeleteModal from './DeleteModal';
-
-export interface Note {
-  id: string;
-  content: string;
-  author: string;
-  title: string;
-  date: string;
-  isFavorited: boolean;
-}
+import type { Note } from '../types/notes';
+import type { User } from '../types/auth';
 
 interface ComponentProps {
-   user: boolean;
+   notes: Note[];
+   user: User | null;
 }
 
-const NotesComponent:React.FC<ComponentProps> = ({user}) => {
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: '1',
-      content: 'Meeting notes from the client presentation. We discussed project requirements and timelines for Q3 deliverables.',
-      author: 'Sarah Johnson',
-      title: 'About Post',
-      date: '2023-10-15',
-      isFavorited: true
-    },
-    {
-      id: '2',
-      content: 'Grocery list for the weekend: eggs, milk, bread, fruits, and vegetables. Don\'t forget to buy dog food!',
-      author: 'Mike Chen',
-      title: 'Personal Post',
-      date: '2023-10-14',
-      isFavorited: false
-    },
-    {
-      id: '3',
-      content: 'Ideas for the new blog post: "10 React Best Practices in 2023", "State Management Comparison", "TypeScript Tips for React Devs".',
-      author: 'Emma Wilson',
-      title: 'Ideas Notes',
-      date: '2023-10-12',
-      isFavorited: true
-    },
-    {
-      id: '4',
-      content: 'Reminder: Dentist appointment on Tuesday at 3 PM. Bring insurance card and arrive 15 minutes early to fill out paperwork.',
-      author: 'Alex Rivera',
-      title: 'Reminders Hello',
-      date: '2023-10-10',
-      isFavorited: false
-    }
-  ]);
+const NotesComponent:React.FC<ComponentProps> = ({notes, user}) => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isDescModalOpen, setIsDescModalOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-  const toggleFavorite = (id: string) => {
-    setNotes(notes.map(note => 
-      note.id === id ? { ...note, isFavorited: !note.isFavorited } : note
-    ));
-  };
 
 const openDescModal = (note: Note) => {
    setSelectedNote(note);
@@ -97,7 +51,7 @@ const closeDeleteModal = () => {
   return (
    <>
       {notes.map(note => (
-         <div key={note.id} className="bg-[var(--primary-lighter)] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+         <div key={note.noteId} className="bg-[var(--primary-lighter)] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
          <div className="p-5">
             <div className="flex justify-between items-start mb-3">
                   <span onClick={() => openDescModal(note)} className="py-1 font-semibold text-base rounded-full hover:underline cursor-pointer text-[var(--primary-color)]">
@@ -105,7 +59,7 @@ const closeDeleteModal = () => {
                   </span>
 
                <div className="flex items-center gap-2">
-               {user?(
+               {note.user === user!.fullName?(
                   <>
                      {/* Edit Button */}
                      <button 
@@ -132,14 +86,9 @@ const closeDeleteModal = () => {
                ): (
                   <>
                      <button 
-                     onClick={() => toggleFavorite(note.id)}
                      className="text-gray-400 hover:text-yellow-500 focus:outline-none"
                      >
-                     {note.isFavorited ? (
-                        <FaHeart className='w-6 h-6 text-red-500'/>
-                     ) : (
                         <FaRegHeart className='w-6 h-6'/>
-                     )}
                      </button>
                   </>
                )}
@@ -156,10 +105,10 @@ const closeDeleteModal = () => {
                {!user && (
                <span className="flex flex-row gap-2 font-medium items-end">
                   <MdPerson className='w-5 h-5'/>
-                  {note.author}
+                  {note.user}
                </span>
                )}
-               <span>{new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+               <span>{new Date(note.updatedAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</span>
             </div>
          </div>
          </div>

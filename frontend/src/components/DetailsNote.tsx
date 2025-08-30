@@ -1,17 +1,18 @@
-// components/NoteModal.tsx
 import { MdPerson } from 'react-icons/md';
-import type { Note } from './NotesComponent';
 import { FaTimes } from 'react-icons/fa';
+import type { Note } from '../types/notes';
+import type { User } from '../types/auth';
 
 interface NoteModalProps {
   note: Note | null;
   isOpen: boolean;
   onClose: () => void;
-  user: boolean;
+  user: User | null;
 }
 
 const DetailsModal: React.FC<NoteModalProps> = ({ note, isOpen, onClose, user }) => {
   if (!isOpen || !note) return null;
+  const isUser = note.user === user!.fullName;
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -43,19 +44,20 @@ const DetailsModal: React.FC<NoteModalProps> = ({ note, isOpen, onClose, user })
           
           <div className="flex items-center justify-between text-sm text-gray-500 border-t pt-4">
             <div className="flex items-center gap-2">
-              {!user && (
+              {!isUser && (
                 <>
                   <MdPerson className='w-5 h-5'/>
-                  <span className="font-medium">{note.author}</span>
+                  <span className="font-medium">{note.user}</span>
                 </>
               )}
             </div>
             
             <div className="flex items-center gap-4">
-              <span>{new Date(note.date).toLocaleDateString('en-US', { 
+              <span>{new Date(note.updatedAt!).toLocaleDateString('en-US', { 
                 year: 'numeric', 
                 month: 'long', 
-                day: 'numeric' 
+                day: 'numeric',
+                timeZone: 'UTC'
               })}</span>
               
             </div>

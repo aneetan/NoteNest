@@ -3,6 +3,10 @@
       "dbconfig",
       "Favorited",
       "forgotpw",
-      "Notenest"
+      "Notenest",
+      "partialize",
+      "resetpw",
+      "sadd",
+      "setex"
    ]
 }

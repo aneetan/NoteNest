@@ -1,6 +1,11 @@
 // components/AddNoteModal.tsx
 import { useEffect, useState } from 'react';
-import type { Note } from './NotesComponent';
+import { QueryClient, useMutation } from '@tanstack/react-query';
+import { addNotes, editNote } from '../api/note.api';
+import { showErrorToast, showSuccessToast } from '../utils/toast.utils';
+import type { AxiosError, AxiosResponse } from 'axios';
+import type { Note } from '../types/notes';
+import { getUserFromToken, getUserIdFromToken } from '../utils/token.utils';
 
 interface AddNoteModalProps {
   isOpen: boolean;
@@ -9,25 +14,62 @@ interface AddNoteModalProps {
   noteToEdit ?: Note | null;
 }
 
+type EditPayload = {noteId: number | null, formData: Partial<Note>};
+type AddPayload = Omit<Note, 'noteId' | 'isFavorited'>;
+
 const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, isEdit, noteToEdit }) => {
-  const [formData, setFormData] = useState<Omit<Note, 'id' | 'isFavorited' | 'author'| 'date'>>({
+  const [formData, setFormData] = useState<Omit<Note,'isFavorited' | 'user'>>({
+    noteId : null,
     title: '',
-    content: ''
+    content: '',
+    userId: null
   })
   const [errors, setErrors] = useState<{title?: string, content?: string}>({});
+  const queryClient = new QueryClient();
+  const user = getUserFromToken(localStorage.getItem("token")!);
 
   useEffect(() => {
     if(isOpen){
       if(isEdit && noteToEdit){
         setFormData({
+          noteId: noteToEdit.noteId,
           title: noteToEdit.title,
-          content: noteToEdit.content
+          content: noteToEdit.content,
+          userId: getUserIdFromToken(localStorage.getItem("token")!)
         })
       } else {
         resetForm();
       }
     }
   }, [isOpen, isEdit, noteToEdit])
+
+  const mutation = useMutation<AxiosResponse, AxiosError, EditPayload | AddPayload> ({
+    mutationFn: (payload) => {
+      if ('noteId' in payload && payload.noteId !== null) {
+        const editPayload = payload as EditPayload;
+        return editNote(editPayload.formData, editPayload.noteId!);
+      } else {
+        const addPayload = payload as AddPayload;
+        return addNotes({ 
+          ...addPayload, 
+          user: user?.fullName,
+          userId: Number(user?.id),
+          noteId: null
+        });
+      }
+    },
+    onSuccess: () => {
+         showSuccessToast(isEdit? "Note Updated Successfully" : "Note Added Successfully");
+         queryClient.invalidateQueries({ queryKey: ['notes'] });
+      },
+      onError: (err) => {
+         console.log(err)
+         if(err.response){
+            console.log('Error response data', err.response)
+         }
+         showErrorToast("Something went wrong");
+      }
+  })
 
   if (!isOpen) return null;
 
@@ -63,11 +105,16 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, isEdit, no
     
     if (!validateForm()) return;
 
-    // if(isEdit && noteToEdit){
-
-    // } else {
-
-    // }
+     if (isEdit) {
+      mutation.mutateAsync({ noteId: formData.noteId, formData});
+    } else {
+      mutation.mutateAsync({
+        title: formData.title,
+        content: formData.content,
+        user: user?.fullName,
+        userId: Number(user?.id)
+      });
+    }
     
     resetForm();
     onClose();
@@ -75,8 +122,10 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, isEdit, no
 
   const resetForm = ()=> {
     setFormData({
+      noteId: null,
       title: '',
-      content: ''
+      content: '',
+      userId: null
     });
     setErrors({});
   }

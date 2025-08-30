@@ -1,21 +1,49 @@
 import type React from "react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import type { ResetPassword } from "../../types/auth";
+import { useLocation, useNavigate } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { resetPassword } from "../../api/user.api";
+import { showErrorToast, showSuccessToast } from "../../utils/toast.utils";
+import type { AxiosError } from "axios";
 
 //error msg
 interface ErrorProps {
-    password ?: string;
+    newPassword ?: string;
     confirmPassword ?: string;
 }
 
 const ResetPw:React.FC = () => {
+    const location = useLocation();
+    const {token} = location.state || {};
     const [formData, setFormData] = useState<ResetPassword>({
-        password: '',
+        newPassword: '',
         confirmPassword: ''
     })
 
     const [error, setError] = useState<ErrorProps>({});
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!token) {
+        showErrorToast("Invalid or missing reset token");
+        navigate('/forgot-password');
+        }
+    }, [token, navigate]);
+
+    
+    const mutation = useMutation({
+        mutationFn: resetPassword,
+        onSuccess: () => {
+            navigate('/login');
+            showSuccessToast("Password Changed Successfully");
+        },
+        onError: (err: AxiosError) => {
+            if(err.response) {
+                console.log(err.response.data);
+            }
+        }
+    })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, type, value, checked } = e.target;
@@ -29,17 +57,19 @@ const ResetPw:React.FC = () => {
     const validateForms = () => {
         const newErrors: ErrorProps = {};
 
-        //password validation
-        if(!formData.password) newErrors.password  = "Password is required"
-        else {
+        if(!formData.newPassword){
+            newErrors.newPassword = "Password is required";
+        } else {
             const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-            if(!strongPasswordRegex.test(formData.password)) newErrors.password = "Password must be 8+ chars, include uppercase, lowercase, number, and special character";
+            if(!strongPasswordRegex.test(formData.newPassword)) newErrors.newPassword = "Password must be 8+ chars, include uppercase, lowercase, number, and special character";
         }
 
-        //confirm password validation
-        if (!formData.confirmPassword) newErrors.confirmPassword = "Confirm your password.";
-        else if (formData.confirmPassword !== formData.password) newErrors.confirmPassword = "Passwords do not match.";
+        if (!formData.confirmPassword) {
+            newErrors.confirmPassword = "Confirm your password.";
+        } else if (formData.confirmPassword !== formData.newPassword) {
+            newErrors.confirmPassword = "Passwords do not match.";
+        }
 
         setError(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -47,14 +77,13 @@ const ResetPw:React.FC = () => {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        if(!validateForms()){
-         setLoading(false);
-         return;
-        } else {
-         console.log("Form submitted");
-         setLoading(false);
-        }
+        if(!validateForms()) return;
+        const submissionData = {
+            ...formData,
+            token: token
+        };
+        
+        mutation.mutate(submissionData);
     }
 
     return (
@@ -70,19 +99,19 @@ const ResetPw:React.FC = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Password */}
                             <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
                                     Password
                                 </label>
                                 <input
-                                    id="password"
+                                    id="newPassword"
                                     type="password"
-                                    name="password"
+                                    name="newPassword"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                     placeholder="Enter your password"
-                                    value={formData.password}
+                                    value={formData.newPassword}
                                     onChange={handleChange}
                                 />
-                                {error.password && (<span className="text-sm text-red-500 mb-2"> {error.password} </span>)}
+                                {error.newPassword && (<span className="text-sm text-red-500 mb-2"> {error.newPassword} </span>)}
                             </div>
 
                             {/* Confirm Password */}
@@ -105,9 +134,9 @@ const ResetPw:React.FC = () => {
                             <button
                                 type="submit"
                                 className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[var(--primary-color)]
-                                  hover:bg-[var(--primary-color-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)] transition ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                  hover:bg-[var(--primary-color-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)] transition ${mutation.isPending ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
-                                {loading ? (
+                                {mutation.isPending ? (
                                     <>
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

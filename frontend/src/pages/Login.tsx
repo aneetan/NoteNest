@@ -4,6 +4,8 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { loginUser } from "../api/user.api";
 import { useNavigate } from "react-router";
+import { showErrorToast } from "../utils/toast.utils";
+import { useAuth } from "../hooks/useAuth";
 
  const Login: React.FC = () => {
     const [formData, setFormData] = useState<LoginProps>({
@@ -12,14 +14,19 @@ import { useNavigate } from "react-router";
     });
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
+     const { login } = useAuth();
 
     const mutation = useMutation<LoginResponse, AxiosError, LoginProps>({
         mutationFn: loginUser,
-        onSuccess: () => navigate("/dashboard"),
+        onSuccess: (data) => {
+            login(data.accessToken, data.id);
+            navigate("/dashboard")
+        },
         onError: (err) => {
             if(err.response){
                 console.log("Error status", err.response?.status);
                 console.log("Error message", err.response?.data);
+                showErrorToast("Login Failed")
             }
         }
     });
