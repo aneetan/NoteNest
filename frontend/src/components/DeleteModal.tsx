@@ -1,4 +1,8 @@
-import type { Note } from "./NotesComponent";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Note } from "../types/notes";
+import type { AxiosError } from "axios";
+import { deleteNote } from "../api/note.api";
+import { showErrorToast, showSuccessToast } from "../utils/toast.utils";
 
 interface DeleteModalProps {
   isOpen: boolean;
@@ -7,7 +11,21 @@ interface DeleteModalProps {
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, noteToDelete}) => {
-  if (!isOpen) return null;
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (noteId: number) => deleteNote(noteId),
+    onSuccess: () => {
+      showSuccessToast("Note deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      onClose();
+    },
+    onError: (err: AxiosError) => {
+      console.error('Delete error:', err);
+      showErrorToast("Failed to delete note");
+    }
+  });
+
+  if (!isOpen || !noteToDelete) return null;
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -16,7 +34,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, noteToDelete}
   };
 
   const handleConfirm = () => {
-   //delete here
+    mutation.mutate(noteToDelete.noteId!);
     onClose();
   };
 
@@ -44,9 +62,10 @@ const DeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, noteToDelete}
             <button
               type="button"
               onClick={handleConfirm}
+              disabled={mutation.isPending}
               className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
             >
-              Delete
+                {mutation.isPending ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         </div>
